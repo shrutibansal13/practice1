@@ -1,35 +1,33 @@
 const User = require('../models/user');
-
-
-const getusers = async (req,res)=>{
-    const data= await User.find();
-    if(!data) return res.status(204).json({'message':'No users found'});
-    res.json(data);
-    console.log(data);
+const registerService= require('../services/register')
+async function getallusers(req,res,next){
+    try {
+        const alldata = await registerService.getusers(); 
+        if (!alldata) {
+          res.status(404).json("There are no users found yet!");
+        }
+        res.json(alldata);
+      } catch (error) {
+        res.status(500).json({ error: error });
+      }
 }
 
-const createusers = async (req,res)=>{
-    console.log(req.body);
-     if(!req?.body?.uname || !req?.body?.email || !req?.body?.contact || !req?.body?.password) {
-        return res.status(400).json({'message':'Fill all the details'});
-     } 
-
-     try{
-        const result=  await User.create({
-            uname: req.body.uname,
-            email: req.body.email,
-            contact: req.body.contact,
-            password: req.body.password,
-        })
-
-        res.status(200).json(result);
-        
-     }catch(err){
-        console.error(err);
-     }
+async function newuser(req,res,next){
+    try {
+        // console.log(req.body);
+        if (!req.body) return next(new AppError("No data found", 404));
+        const createduser =  await registerService.createusers(req.body);
+        // res.json(createduser);
+        // console.log(createduser);
+        res.status(200).json(createduser);
+      } catch (error) {
+        res.status(500).json({ error: error });
+      }
 }
+
 
 module.exports = {
-    getusers,
-    createusers
+    getallusers,
+    newuser
+
 }

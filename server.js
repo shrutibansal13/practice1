@@ -1,15 +1,18 @@
 require('dotenv').config();
 const express= require('express');
 const app = express();
-const mongoose =require('mongoose');
-const connectDB = require('./config/dbConn')
-const register= require('./controllers/registercontroller')
+const bodyParser =  require("body-parser");
+const connectDB = require('./config/dbConn');
+const router = require("./routes");
+
 connectDB();
 
+app.use(bodyParser.urlencoded({extended: true }));  
+app.use(express.json({ type: 'application/*+json' }));
+app.use(bodyParser.json());
+app.use(router);
 
-app.get('/', register.getusers); 
-app.post('/post', register.createusers); 
-mongoose.connection.once('open',()=>{
-    console.log('Connected to MongoDB');
-    app.listen(8000,()=> console.log(`Server running on port 8000`))
-})
+
+app.listen(8000);
+
+module.exports = app;
