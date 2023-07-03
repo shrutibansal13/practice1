@@ -11,15 +11,6 @@ async function  getusers(){
 }
 
 async function createusers(data) {
-    // console.log("req>>>>>", req.body)
-//    var uname= data.uname;
-    // var email=data.email;
-    // var contact=data.contact;
-    // var password= data.password;
-    //  if(!uname || !email || !contact || !password) {
-    //     return res.status(400).json({'message':'Fill all the details'});
-    //  } 
-
      try{
         const check= await User.find({email:data.email})
         console.log(check);
@@ -44,9 +35,23 @@ async function createusers(data) {
      }
 }
 
+async function checkinguser(logs){
+    try{
+        const checkpoint= await User.find({email:logs.email,password:logs.password})  
+        if(checkpoint.length>0){
+            return checkpoint;
+        }else {
+            return 'User does not exist';
+        }
+       
+    }catch(error){
+        return error;
+    }
+}
 
 
 module.exports={
     getusers,
-    createusers
+    createusers,
+    checkinguser
 }

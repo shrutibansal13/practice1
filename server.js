@@ -4,6 +4,11 @@ const app = express();
 const bodyParser =  require("body-parser");
 const connectDB = require('./config/dbConn');
 const router = require("./routes");
+const cors = require('cors');
+app.use(cors({
+    origin: '*',
+    methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
 
 connectDB();
 
