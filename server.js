@@ -4,6 +4,7 @@ const app = express();
 const bodyParser =  require("body-parser");
 const connectDB = require('./config/dbConn');
 const fileupload = require('express-fileupload');
+const jwt = require('jsonwebtoken');
 var ObjectId = require('mongodb').ObjectId;
 const router = require("./routes");
 const cors = require('cors');

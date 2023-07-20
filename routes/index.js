@@ -6,7 +6,7 @@ router.get('/get', register.getallusers);
 router.get('/userbyId', register.getuser); 
 router.post('/post', register.newuser); 
 router.post('/update', register.updateone); 
-router.post('/check', register.checkuser);
+router.post('/check', register.loginuser);
 router.post('/upload', register.uploadfile);
 router.delete('/delete', register.deleteuser);
 router.get('/paging', register.pagination);
