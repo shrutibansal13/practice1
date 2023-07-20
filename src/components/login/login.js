@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -21,9 +22,11 @@ export default function Login() {
             try {
                 const a = await axios.post('http://localhost:8000/check', { email, password })
                 console.log(a, "response<<<");
-                if (a.data.length > 0) {
-                    navigate(`/home`)
-                }
+                    if (typeof(a.data) === 'string') {
+                       setError('Password does not match');
+                    }else{
+                        navigate(`/home`)
+                    }
 
             }
             catch (error) {
@@ -54,6 +57,10 @@ export default function Login() {
 
                                 <button className='btn btn-dark' type='submit'>Log In</button>
                                 <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>
+                             
+                                <div><h6>New User?</h6>
+                                <Link to='/signup'>Signup</Link>
+                                </div>
                             </form>
 
                         </div>

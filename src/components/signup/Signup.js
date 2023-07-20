@@ -6,15 +6,18 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
-    // const counter =useSelector((state)=>state.counter);
     const [username, setName] = useState('');
     const [email, setEmail] = useState('');
     const [contact, setContact] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('');
+    const [error, setError] = useState('');
     const [errorN, setErrorN] = useState('');
     const [errorE, setErrorE] = useState('');
     const [errorC, setErrorC] = useState('');
     const [errorP, setErrorP] = useState('');
+    const [errorR, setErrorR] = useState('');
+    const roles =['Superadmin', 'User']
     const navigate = useNavigate();
 
     function handlecontact(event) {
@@ -33,6 +36,7 @@ export default function Signup() {
     }
 
     function submit(event) {
+        console.log(role,"roleeeeeeeeee");
         let regemail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         event.preventDefault()
 
@@ -46,7 +50,10 @@ export default function Signup() {
             setErrorC('Invalid Mobile Number')
         } else if (password === "") {
             setErrorP('Creat Password')
-        } else {
+        }else if (role === "") {
+            setErrorR('Select Role')
+        }
+         else {
             // const formdata ={username,email,contact,password} 
             let config = {
                 url: 'http://localhost:8000/post',
@@ -55,15 +62,17 @@ export default function Signup() {
                     "uname": username,
                     "email": email,
                     "contact": contact,
-                    "password": password
+                    "password": password,
+                    "role":role
                 },
                 headers: { 'Content-Type': 'application/json' }
             }
             try {
                 axios.request(config).then((res) => {
-                    console.log(res);
-                    console.log('Submitted');
-                    if (res.data.length > 0) {
+                    console.log(res.data);
+                    if (typeof(res.data) == 'string') {
+                        setError(res.data)
+                    }else{
                         navigate(`/home`)
                     }
                 })
@@ -80,10 +89,13 @@ export default function Signup() {
             setErrorN('');
             setErrorE('');
             setErrorP('');
-
-
+            setErrorR('');
+            setError('');
         }
     }
+    function handleChange(e){
+       setRole(e.target.value)
+      }
 
     return (
         <div className='row py-5 px-5'>
@@ -113,12 +125,23 @@ export default function Signup() {
                                     <input type="password" name="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                     <p style={{ color: "red", fontSize: "15px" }}>{errorP}</p>
                                     <br></br>
-
-                                    <button className='btn btn-dark' type='submit'>Sign Up</button>
+                                    <label>Role :</label><br></br>
+                                    <select className="form-select" defaultValue={role} onChange={(e)=>handleChange(e)} >
+                                    <option selected>Select Role</option>
+                                    {roles.map((val)=>(
+                                        <option value={val}>{val}</option>
+                                        
+                                    ))
+                                    }
+                                    </select>
+                                    <p style={{ color: "red", fontSize: "15px" }}>{errorR}</p><br></br>
+                                   
+                                    <button className='btn btn-dark' type='submit'>Sign Up</button><br></br>
                                     <div><h6>Already have an account?</h6>
                                         {/* <span as={Link} to={"/login"}>Login</span> */}
                                         <Link to='/login'>Login</Link>
                                     </div>
+                                    <p style={{ color: "red", fontSize: "15px" }}>{error}</p><br></br>
                                 </form>
                             </div>
                             <div className='col-md-3'></div>
