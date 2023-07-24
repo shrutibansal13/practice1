@@ -1,11 +1,14 @@
 const { ObjectId } = require('mongodb');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-let OtId = require('mongodb').ObjectId
+let OtId = require('mongodb').ObjectId;
+const jwt = require('jsonwebtoken');
+
 
 const saltRounds = 10;
 let dbpassword = '';
 let flag = true;
+
 
 async function getusers() {
     try {
@@ -17,8 +20,8 @@ async function getusers() {
     }
 }
 async function getuserbyId(id) {
-    console.log(typeof (id));
     try {
+      
         const data = await User.findById({ "_id": new OtId(id) });
         console.log(data);
         return data;
@@ -39,8 +42,9 @@ async function searchuser(search) {
 
 async function createusers(data) {
     try {
+       
         const check = await User.find({ email: data.email })
-
+        
         if (data.role === 'Superadmin') {
             const rolecheck = await User.find({ role: data.role })
             if (rolecheck.length > 0) {
@@ -55,9 +59,6 @@ async function createusers(data) {
         } else if (flag) {
             bcrypt.hash(data.password, saltRounds, async function (err, hash) {
                 dbpassword = hash;
-
-
-                console.log(dbpassword);
                 const Userdetails = User({
                     uname: data.uname,
                     email: data.email,
@@ -85,12 +86,15 @@ async function createusers(data) {
 
 async function update(data) {
     try {
-        const results = await User.updateOne({ "_id": new ObjectId(`${data.id}`) }, {
+        const id = helpers(req);
+        console.log(id,"iddddddd");
+        var hash = bcrypt.hashSync(data.password, saltRounds);  
+        const results = await User.updateOne({ "_id": id }, {
             $set: {
                 uname: data.uname,
                 email: data.email,
                 contact: data.contact,
-                password: data.password
+                password: hash
             }
         })
         return results;
@@ -106,9 +110,13 @@ async function loginguser(logs) {
 
         if (loginData) {
             const userPassword = loginData[0].password;
+            // const userId = loginData[0]._id
+            console.log(loginData[0],"loggggggggginnnnnnnnnnn");
             const response = await bcrypt.compare(logs.password, userPassword);
             if (response) {
-                return loginData;
+                let jwtSecretKey = process.env.JWT_SECRET_KEY;
+                const token = jwt.sign(loginData[0].toJSON(), jwtSecretKey);
+                return token;
             } else {
                 return 'Password does not match'
             }
