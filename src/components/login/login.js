@@ -7,6 +7,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    
     const navigate = useNavigate();
 
     async function logged(event) {
@@ -22,9 +23,13 @@ export default function Login() {
             try {
                 const a = await axios.post('http://localhost:8000/check', { email, password })
                 console.log(a, "response<<<");
-                    if (typeof(a.data) === 'string') {
+               
+                    if (a.data==='Password does not match') {
                        setError('Password does not match');
                     }else{
+                        const token = a.data.data;
+                        // console.log(token,'tokennnnnnnnnnn');
+                        localStorage.setItem('token',token)
                         navigate(`/home`)
                     }
 

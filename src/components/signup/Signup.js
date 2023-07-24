@@ -73,7 +73,7 @@ export default function Signup() {
                     if (typeof(res.data) == 'string') {
                         setError(res.data)
                     }else{
-                        navigate(`/home`)
+                        navigate(`/login`)
                     }
                 })
             }

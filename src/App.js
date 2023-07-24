@@ -9,7 +9,7 @@ import Signup from './components/signup/Signup';
 import Login from './components/login/login';
 import Home from './components/home/home';
 import Updateform from './components/updateform/updateform';
-
+import Parentcomponent from './components/parentcomponent';
 function App(props) {
 
   return (
@@ -18,7 +18,7 @@ function App(props) {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/update/:id" element={<Updateform />} />
+      <Route path="/update" element={<Updateform />} />
     </Routes>
 
   );
