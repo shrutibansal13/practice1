@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
-import { Formik,Form, Field,ErrorMessage  } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 export default function Updateform() {
     const { id } = useParams();
-    const [valuess, setValuess] = useState('');
+    const [valuess, setValuess] = useState({});
+    const token = localStorage.getItem('token')
     // const [email, setEmail] = useState('');
     // const [contact, setContact] = useState('');
     // const [password, setPassword] = useState('');
@@ -18,31 +19,17 @@ export default function Updateform() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        
+
         getuserbyId();
+        // console.log(valuess.uname, "VALUESSSSSSSSSSSS");
     }, [])
-
-    // function handlecontact(event) {
-    //     let phone = event.target.value;
-
-    //     if (phone.length !== 10) {
-    //         setErrorC(`**Invalid contact`);
-    //         return;
-
-    //     } else {
-    //         setContact(phone);
-    //         setErrorC(``);
-
-    //         return;
-    //     }
-    // }
 
     async function getuserbyId() {
         try {
-            const token = localStorage.getItem('token')
-            await axios.get('http://localhost:8000/userbyId',{headers: {'Authorization': token}}).then((result) => {
-                setValuess(result.data)
-                console.log(result.data[0].email,"VALUESSSSSSSSSSSS");
+
+            await axios.get('http://localhost:8000/userbyId', { headers: { 'Authorization': token } }).then((result) => {
+                setValuess(result.data[0])
+               
             })
 
         }
@@ -53,34 +40,33 @@ export default function Updateform() {
 
 
     async function update(values) {
-   
-            try {
-                let config = {
-                    url: 'http://localhost:8000/update',
-                    method: 'POST',
-                    data: {
-                        "id": id,
-                        "uname": values.username,
-                        "email": values.email,
-                        "contact": values.contact,
-                        "password": values.password
-                    },
-                    headers: { 'Content-Type': 'application/json' }
-                }
-                axios.request(config).then((res) => {
-                    console.log(res);
-                    console.log("update");
-                    if (typeof(res.data) == 'string') {
-                        console.log(`${res.data}`);
-                    }else{
-                        navigate(`/home`)
-                    }
 
-                })
+        try {
+            let config = {
+                url: 'http://localhost:8000/update',
+                method: 'POST',
+                data: {
+                    "uname": values.username,
+                    "email": values.email,
+                    "contact": values.contact,
+                    "password": values.password
+                },
+                headers: { 'Authorization': token, 'Content-Type': 'application/json' }
             }
-            catch (error) {
-                console.log(error)
-            }
+            axios.request(config).then((res) => {
+                console.log(res);
+                console.log("update");
+                if (typeof (res.data) == 'string') {
+                    console.log(`${res.data}`);
+                } else {
+                    navigate(`/home`)
+                }
+
+            })
+        }
+        catch (error) {
+            console.log(error)
+        }
         // }
 
     }
@@ -117,63 +103,64 @@ export default function Updateform() {
     //     </div>
     // )
 
-    return(
+    return (
         <div className='container'>
-             <div className='row' >
+            <div className='row' >
                 <div className='col-md-3' ></div>
                 <div className='col-md-6 py-5 text-center' >
-                    {/* {console.log(valuess[0].uname,"vaaaaaaaaaaaa")} */}
-            <Formik 
-              initialValues={{
-                 username: "shhhhhhhhhhhhhhhhhhhhhh",
-                 email: "",
-                 contact:"",
-                 password: "" 
-                }}
-              validationSchema={Yup.object({
-                username: Yup.string()
-                  .max(15, 'Must be 15 characters or less')
-                  .required('Required'),
-                email: Yup.string().email('Invalid email address').required('Required'),
-                contact: Yup.number()
-                .typeError("That doesn't look like a phone number")
-                .positive("A phone number can't start with a minus")
-                .integer("A phone number can't include a decimal point")
-                .min(10)
-                .required('A phone number is required'),
-                password: Yup.string().required("Please provide a valid password")
-              })}
-              onSubmit={(values, { setSubmitting }) => {
-                setTimeout(() => {
-                    update(values)
-                  setSubmitting(false);
-                }, 400);
-              }}
+                    {console.log(valuess.uname, "vaaaaaaaaaaaa")}
+                   {valuess? <Formik
+                        enableReinitialize={true}
+                        initialValues={{
+                            username:  valuess.uname ? valuess.uname :"",
+                            email: valuess.email ? valuess.email : "",
+                            contact: valuess.contact ? valuess.contact : "",
+                            password: valuess.password ? valuess.password : ""
+                        }}
+                        validationSchema={Yup.object({
+                            username: Yup.string()
+                                .max(15, 'Must be 15 characters or less')
+                                .required('Required'),
+                            email: Yup.string().email('Invalid email address').required('Required'),
+                            contact: Yup.number()
+                                .typeError("That doesn't look like a phone number")
+                                .positive("A phone number can't start with a minus")
+                                .integer("A phone number can't include a decimal point")
+                                .min(10)
+                                .required('A phone number is required'),
+                            password: Yup.string().required("Please provide a valid password")
+                        })}
+                        onSubmit={(values, { setSubmitting }) => {
+                            setTimeout(() => {
+                                update(values)
+                                setSubmitting(false);
+                            }, 400);
+                        }}
 
-              >
-                <Form>
-                    <label htmlFor="username">User Name</label>
-                    <Field  type="text" name="username"></Field>
-                    <ErrorMessage name="username" component="div" /><br></br><br></br>
+                    >
+                        <Form>
+                            <label htmlFor="username">User Name</label>
+                            <Field type="text" name="username"></Field>
+                            <ErrorMessage name="username" component="div" /><br></br><br></br>
 
-                    <label htmlFor="email">Email</label>
-                    <Field  type="email" name="email"></Field>
-                    <ErrorMessage name="email" component="div" /><br></br><br></br>
+                            <label htmlFor="email">Email</label>
+                            <Field type="email" name="email"></Field>
+                            <ErrorMessage name="email" component="div" /><br></br><br></br>
 
-                    <label htmlFor="contact">Contact</label>
-                    <Field  type="phone" name="contact"></Field>
-                    <ErrorMessage name="contact" component="div" /><br></br><br></br>
+                            <label htmlFor="contact">Contact</label>
+                            <Field type="phone" name="contact"></Field>
+                            <ErrorMessage name="contact" component="div" /><br></br><br></br>
 
-                    <label htmlFor="password">Password</label>
-                    <Field type="password" name="password" />
-                    <ErrorMessage name="password" component="div" /><br></br><br></br>
-                    <button type="submit" >
-                        Submit
-                    </button>
+                            <label htmlFor="password">Password</label>
+                            <Field type="password" name="password" />
+                            <ErrorMessage name="password" component="div" /><br></br><br></br>
+                            <button type="submit" >
+                                Submit
+                            </button>
 
-                </Form>
-            </Formik>
-            </div>
+                        </Form>
+                    </Formik>:<div>Loading...</div>}
+                </div>
             </div>
             <div className='col-md-3' ></div>
         </div>
