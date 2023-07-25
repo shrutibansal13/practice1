@@ -1,6 +1,22 @@
 const User = require('../models/user');
 const registerService = require('../services/register')
 const helpers= require('../utils/helpers')
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'shruti1212bansal@gmail.com',
+    pass: 'jrah wkbj vnim fbbq'
+  }
+});
+
+var mailOptions = {
+  from: 'shruti1212bansal@gmail.com',
+  to: 'shrutib@linkites.com',
+  subject: 'Tryingggg Sending Email using Node.js',
+  text: 'Superadmin updated there details!'
+};
 
 async function getallusers(req, res) {
   try {
@@ -17,7 +33,6 @@ async function getallusers(req, res) {
 async function getuser(req, res, next) {
   try {
     const id = helpers(req);
-    console.log(id,"iddddddd");
     if (!req.query) return next(new AppError("No data found", 404));
     const data = await registerService.getuserbyId(id);
     console.log("data>>>>>>>>>11", data)
@@ -48,9 +63,15 @@ async function updateone(req, res, next) {
   
   try {
     const id = helpers(req);
-    console.log(id,"iddddddd");
     if (!req.body) return next(new AppError("No data found", 404));
     const updateduser = await registerService.update(req.body,id);
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
     res.status(200).json(updateduser);
   } catch (error) {
     res.status(500).json({ error: error });

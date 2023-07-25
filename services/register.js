@@ -110,8 +110,6 @@ async function loginguser(logs) {
 
         if (loginData) {
             const userPassword = loginData[0].password;
-            // const userId = loginData[0]._id
-            console.log(loginData[0],"loggggggggginnnnnnnnnnn");
             const response = await bcrypt.compare(logs.password, userPassword);
             if (response) {
                 let jwtSecretKey = process.env.JWT_SECRET_KEY;
