@@ -47,9 +47,10 @@ async function newuser(req, res, next) {
 async function updateone(req, res, next) {
   
   try {
-   
+    const id = helpers(req);
+    console.log(id,"iddddddd");
     if (!req.body) return next(new AppError("No data found", 404));
-    const updateduser = await registerService.update(req.body);
+    const updateduser = await registerService.update(req.body,id);
     res.status(200).json(updateduser);
   } catch (error) {
     res.status(500).json({ error: error });

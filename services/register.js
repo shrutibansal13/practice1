@@ -3,7 +3,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 let OtId = require('mongodb').ObjectId;
 const jwt = require('jsonwebtoken');
-
+const helpers= require('../utils/helpers')
 
 const saltRounds = 10;
 let dbpassword = '';
@@ -84,10 +84,10 @@ async function createusers(data) {
     }
 }
 
-async function update(data) {
+async function update(data,id) {
     try {
-        const id = helpers(req);
-        console.log(id,"iddddddd");
+        // const id = helpers(req);
+        // console.log(id,"iddddddd");
         var hash = bcrypt.hashSync(data.password, saltRounds);  
         const results = await User.updateOne({ "_id": id }, {
             $set: {
