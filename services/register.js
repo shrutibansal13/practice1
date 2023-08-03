@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-let OtId = require('mongodb').ObjectId;
+const OtId = require('mongodb').ObjectId;
 const jwt = require('jsonwebtoken');
 const helpers= require('../utils/helpers')
 
@@ -12,7 +12,8 @@ let flag = true;
 
 async function getusers() {
     try {
-        const data = await User.find();
+        const data = await User.find({role:'User'});
+        console.log(data,"data");
         return data;
     } catch (error) {
         console.log(`Could not fetch data ${error}`)
@@ -44,7 +45,7 @@ async function createusers(data) {
     try {
        
         const check = await User.find({ email: data.email })
-        
+        console.log(data,"datatta");
         if (data.role === 'Superadmin') {
             const rolecheck = await User.find({ role: data.role })
             if (rolecheck.length > 0) {
@@ -107,14 +108,15 @@ async function update(data,id) {
 async function loginguser(logs) {
     try {
         const loginData = await User.find({ email: logs.email })
-
-        if (loginData) {
+        console.log(loginData);
+        if (loginData.length>0) {
             const userPassword = loginData[0].password;
+            const role = loginData[0].role;
             const response = await bcrypt.compare(logs.password, userPassword);
             if (response) {
                 let jwtSecretKey = process.env.JWT_SECRET_KEY;
                 const token = jwt.sign(loginData[0].toJSON(), jwtSecretKey);
-                return token;
+                return {token,role};
             } else {
                 return 'Password does not match'
             }

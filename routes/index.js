@@ -7,6 +7,7 @@ const mobiledata= require('../controllers/mobiledatacontroller')
 //users
 router.get('/get',register.getallusers); 
 router.get('/userbyId', authenticate, register.getuser); 
+router.get('/userbyparamId', register.getuserbyparamId); 
 router.post('/post', register.newuser); 
 router.post('/update',authenticate, register.updateone); 
 router.post('/check', register.loginuser);
@@ -17,5 +18,10 @@ router.get('/search', register.searchuser);
 
 //products
 router.post('/postalldata',mobiledata.getallmobiles); 
+router.get('/getallproducts',mobiledata.getallproducts); 
+router.post('/postcategory', mobiledata.insertData);
+router.get('/getcategories',mobiledata.getcategories); 
+router.get('/getallcategories',mobiledata.getallcategories);
+router.get('/getproducts',mobiledata.getcategoryproducts); 
 // router.post( ); 
 module.exports= router;

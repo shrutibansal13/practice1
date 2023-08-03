@@ -46,6 +46,24 @@ async function getuser(req, res, next) {
   }
 }
 
+
+
+async function getuserbyparamId(req, res, next) {
+  try {
+   
+    if (!req.query) return next(new AppError("No data found", 404));
+    const data = await registerService.getuserbyId(req.query.id);
+    console.log("data>>>>>>>>>11", data)
+    if (!data) {
+      res.status(404).json("There are no users!");
+    }
+    res.status(200).json([data]);
+  } catch (error) { 
+    res.status(500).json({ error: error });
+  }
+}
+
+
 async function newuser(req, res, next) {
   try {
     // console.log(req.body);
@@ -151,6 +169,7 @@ async function searchuser(req, res, next) {
 module.exports = {
   getallusers,
   getuser,
+  getuserbyparamId,
   newuser,
   updateone,
   loginuser,
