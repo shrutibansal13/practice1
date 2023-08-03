@@ -10,14 +10,16 @@ import Login from './components/login/login';
 import Home from './components/home/home';
 import Updateform from './components/updateform/updateform';
 import Parentcomponent from './components/parentcomponent';
+import CategoryProducts from './components/categoryproducts/categoryproducts';
 function App(props) {
 
   return (
     <Routes>
-      <Route exact path="/" element={<Signup />} />
+      <Route exact path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/category/:id" element={<CategoryProducts />} />
       <Route path="/update" element={<Updateform />} />
     </Routes>
 

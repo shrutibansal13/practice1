@@ -27,8 +27,10 @@ export default function Login() {
                     if (a.data==='Password does not match') {
                        setError('Password does not match');
                     }else{
-                        const token = a.data.data;
-                        // console.log(token,'tokennnnnnnnnnn');
+                        const token = a.data.data.token;
+                        const role = a.data.data.role;
+                        localStorage.setItem('role',role)
+                        console.log(a.data,'tokennnnnnnnnnn');
                         localStorage.setItem('token',token)
                         navigate(`/home`)
                     }

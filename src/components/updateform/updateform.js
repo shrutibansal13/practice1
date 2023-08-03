@@ -20,15 +20,18 @@ export default function Updateform() {
 
     useEffect(() => {
 
-        getuserbyId();
+        getuserbyId(id);
         // console.log(valuess.uname, "VALUESSSSSSSSSSSS");
     }, [])
 
-    async function getuserbyId() {
+    async function getuserbyId(id) {
         try {
 
-            await axios.get('http://localhost:8000/userbyId', { headers: { 'Authorization': token } }).then((result) => {
+            await axios.get('http://localhost:8000/userbyparamId?'+ new URLSearchParams({
+                id:id
+            })).then((result) => {
                 setValuess(result.data[0])
+                console.log(result,'ressss');
                
             })
 
@@ -108,7 +111,7 @@ export default function Updateform() {
             <div className='row' >
                 <div className='col-md-3' ></div>
                 <div className='col-md-6 py-5 text-center' >
-                    {console.log(valuess.uname, "vaaaaaaaaaaaa")}
+                    {console.log(valuess, "vaaaaaaaaaaaa")}
                    {valuess? <Formik
                         enableReinitialize={true}
                         initialValues={{

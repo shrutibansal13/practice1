@@ -1,10 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
-import ReactPaginate from 'react-paginate';
-import styles from './home.css';
-import { DebounceInput } from 'react-debounce-input';
+import SideNavigation from '../helpers/sideNavigation';
+import TopNavigation from '../helpers/TopNavigation';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 // import {toast} from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,8 +16,13 @@ function Home() {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [search, setSearch] = useState('');
   const [lengthh, setLength] = useState(0);
+  const [saveToken, setToken] = useState(()=>{
+    const token = localStorage.getItem('token')
+    return token;
+  });
   const [users, setUsers] = useState([]);
   var flag = false;
+  // let token = localStorage.getItem('token')
 
 
   const [itemOffset, setItemOffset] = useState(0);
@@ -25,28 +31,54 @@ function Home() {
   const pageCount = Math.ceil(users.length / itemsPerPage);
 
   const navigate = useNavigate();
-  // if(lengthh>itemsPerPage){
-  //   totalpage= Math.ceil(lengthh/itemsPerPage);
-  // }else{
-  //   totalpage=1
-  // }
+ 
 
-  // var itemOffset= (page-1)*itemsPerPage
+  // useEffect(() => {
+  // const token = localStorage.getItem('token')
+  // const role = localStorage.getItem('role')
+  //   // getalluser()
+  //   console.log(token,role);
+  //   if(token){
+  //     if (role==='Superadmin'){
+  //       getAllUser();
+  //   } else{
+  //     getuser(search, token);
+  //   }
 
-  useEffect(() => {
-    getuser(search);
+  //   }else{
+  //     navigate('/login')
+  //   }
+   
 
-  }, [search])
+  // }, [search])
 
-  function getuser(searching) {
-    const token = localStorage.getItem('token')
+
+function getAllUser(){
+  try{
+    axios.get('http://localhost:8000/get').then((res) => {
+      setUsers(res.data);
+    //  console.log(res.data,"ddddddddddddddd");
+    })
+  }
+  catch (error) {
+    console.log(error);
+  } 
+}
+
+  function getuser(searching,token) {
+ 
     try {
     if (searching === "") {
       
         axios.get('http://localhost:8000/userbyId',{headers: {'Authorization': token}}).then((res) => {
+         if(res.status===200) {
           setUsers(res.data);
           console.log(res.data.length,"datatt");
           setLength(res.data.length);
+        }else{
+          
+          console.log(res.data);
+        }
         })
       
     
@@ -115,7 +147,7 @@ function Home() {
     try {
       console.log(id);
       if (id) {
-        navigate(`/update`)
+        navigate(`/update/${id}`)
       }
 
     }
@@ -126,10 +158,16 @@ function Home() {
 
   function deleteuser(id) {
     try {
+      const token = localStorage.getItem('token')
+      const role = localStorage.getItem('role')
       axios.delete('http://localhost:8000/delete?' + new URLSearchParams({
         id: id
       })).then((res) => {
-        getuser('')
+        if (role==='Superadmin'){
+          getAllUser();
+      } else{
+        getuser(search, token);
+      }
       })
     }
     catch (error) {
@@ -137,113 +175,134 @@ function Home() {
     }
   }
 
+ 
+
 
   return (
-    <div>
-      <div className='row py-5 px-5'>
+//     <div>
+//       <div className='row py-5 px-5'>
+//       <div className='row py-5 px-5'>
+//       <div className='col-md-6'>
+//         <h1>Users</h1>
+//         </div>
+//         <div className='col-md-6'>
+//         <button className='btn btn-dark' onClick={logout}> Logout </button>
+//         </div>
+//       </div>
+//         <div className='col-md-6'>
+//           <DebounceInput
+//             debounceTimeout={300}
+//             onChange={(e) => { setSearch(e.target.value) }} />
+//           <br></br><br></br>
+//           <div className='item-container'>
+//             <table className="table  table-striped table-bordered">
+//               <thead>
+//                 <tr>
+//                   <th>Username</th>
+//                   <th>Email</th>
+//                   <th>Contact</th>
+//                   {/* {currentItems[0].role==='Superadmin'?<th>Actions</th> : ''} */}
+//                   <th>Actions</th>
+//                 </tr>
+//               </thead>
+//               {console.log(currentItems)}
+//               {currentItems && currentItems.map((user) => (
 
-        <h1>Users</h1>
-
-        <div className='col-md-6'>
-          <DebounceInput
-            debounceTimeout={300}
-            onChange={(e) => { setSearch(e.target.value) }} />
-          <br></br><br></br>
-          <div className='item-container'>
-            <table className="table  table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Contact</th>
-                  {/* {currentItems[0].role==='Superadmin'?<th>Actions</th> : ''} */}
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              {console.log(currentItems)}
-              {currentItems && currentItems.map((user) => (
-
-                <tbody>
-                  <tr>
-                    <td>{user.uname}</td>
-                    <td>{user.email}</td>
-                    <td>{user.contact}</td>
+//                 <tbody>
+//                   <tr>
+//                     <td>{user.uname}</td>
+//                     <td>{user.email}</td>
+//                     <td>{user.contact}</td>
                    
-                    <td>
-                    {user.role==='Superadmin'?
-                      <table className="table  table-striped active">
-                        <tbody>
-                          <tr>
-                           <td> <button type="button" className="btn btn-primary" onClick={() => update(user._id)}>Update </button></td>
-                            <td> <button type="button" className="btn btn-danger" onClick={() => deleteuser(user._id)}>Delete</button></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      :<div>User</div> }
-                  </td>
+//                     <td>
+//                     {localStorage.getItem('role')==='Superadmin'?
+//                       <table className="table  table-striped active">
+//                         <tbody>
+//                           <tr>
+//                            <td> <button type="button" className="btn btn-primary" onClick={() => update(user._id)}>Update </button></td>
+//                             <td> <button type="button" className="btn btn-danger" onClick={() => deleteuser(user._id)}>Delete</button></td>
+//                           </tr>
+//                         </tbody>
+//                       </table>
+//                       :<div>User</div> }
+//                   </td>
                   
-                  </tr>
+//                   </tr>
 
-                </tbody>
-
-
-              ))}
-
-            </table>
+//                 </tbody>
 
 
-            {users.length > 5 ?
-              <ReactPaginate
-                breakLabel="..."
-                nextLabel="next >"
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={5}
-                pageCount={pageCount}
+//               ))}
 
-                previousLabel="< previous"
-                renderOnZeroPageCount={null}
-                pageClassName="page-item"
-                pageLinkClassName="page-link"
-                previousClassName="page-item"
-                previousLinkClassName="page-link"
-                nextClassName="page-item"
-                nextLinkClassName="page-link"
-                breakClassName="page-item"
-                breakLinkClassName="page-link"
-                containerClassName="pagination"
-                activeClassName="active"
+//             </table>
 
-              />
-              : <div></div>
-            }
-            {/* {
-        <div className='row px-4 py-1 '>
+//             {console.log(users)}
+//             {users.length > 5 ?
+//               <ReactPaginate
+//                 breakLabel="..."
+//                 nextLabel="next >"
+//                 onPageChange={handlePageClick}
+//                 pageRangeDisplayed={5}
+//                 pageCount={pageCount}
+
+//                 previousLabel="< previous"
+//                 renderOnZeroPageCount={null}
+//                 pageClassName="page-item"
+//                 pageLinkClassName="page-link"
+//                 previousClassName="page-item"
+//                 previousLinkClassName="page-link"
+//                 nextClassName="page-item"
+//                 nextLinkClassName="page-link"
+//                 breakClassName="page-item"
+//                 breakLinkClassName="page-link"
+//                 containerClassName="pagination"
+//                 activeClassName="active"
+
+//               />
+//               : <div></div>
+//             }
+//             {/* {
+//         <div className='row px-4 py-1 '>
          
-          <ul className="pagination justify-content-center">
-            <li className="page-item " style={{display: page === 1 ? 'none' : 'block'}}>
-              <button className="page-link" onClick={() =>setPage(page-1)  }>&laquo;</button>
-            </li>
+//           <ul className="pagination justify-content-center">
+//             <li className="page-item " style={{display: page === 1 ? 'none' : 'block'}}>
+//               <button className="page-link" onClick={() =>setPage(page-1)  }>&laquo;</button>
+//             </li>
       
-            {
-              [...Array(totalpage)].map((data, index) => (
-                <li key={index} className={`page-item ${page === index + 1 ? 'active' : ''} `}>
-                  <button className="page-link" onClick={() => setPage(index + 1)}>{index + 1}</button>
-                </li>
-              ))
-            }
-            <li className= "page-item" style={{display: page === totalpage ? 'none' : 'block'}}>
-              <button className="page-link" onClick={() => setPage(page+1)}>&raquo;</button>
-            </li>
-          </ul>
-        </div>
-} */}
+//             {
+//               [...Array(totalpage)].map((data, index) => (
+//                 <li key={index} className={`page-item ${page === index + 1 ? 'active' : ''} `}>
+//                   <button className="page-link" onClick={() => setPage(index + 1)}>{index + 1}</button>
+//                 </li>
+//               ))
+//             }
+//             <li className= "page-item" style={{display: page === totalpage ? 'none' : 'block'}}>
+//               <button className="page-link" onClick={() => setPage(page+1)}>&raquo;</button>
+//             </li>
+//           </ul>
+//         </div>
+// } */}
 
 
-          </div>
-          <br></br>
-        </div>
-      </div>
-    </div>
+//           </div>
+//           <br></br>
+//         </div>
+//       </div>
+//     </div>
+
+        <Container fluid>
+          
+          <Row>
+           <Col  style={{width:'10%'}}>
+              <SideNavigation/>
+           </Col>
+           <Col  xs lg="2" style={{width:'82%'}}>
+            <TopNavigation/>
+            <h5>Welcome to Home page!!</h5>
+           </Col>
+            </Row>
+          </Container>
+
   )
 }
 
