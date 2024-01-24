@@ -13,7 +13,7 @@ app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
 }));
-
+//check
 connectDB();
 app.use(express.urlencoded({extended: true })); 
 app.use(bodyParser.urlencoded({extended: true }));  
