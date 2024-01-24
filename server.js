@@ -13,7 +13,7 @@ app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
 }));
-
+//check
 connectDB();
 app.use(express.urlencoded({extended: true })); 
 app.use(bodyParser.urlencoded({extended: true }));  
@@ -21,7 +21,7 @@ app.use(express.json({ type: 'application/*+json' }));
 app.use(bodyParser.json());
 app.use(router);
 app.use(fileupload());
-
+//test
 // cron.schedule("*/10 * * * * *", function() {
 //     console.log("running a task every 10 seconds");
 // });
